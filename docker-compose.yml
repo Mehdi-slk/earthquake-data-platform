@@ -74,6 +74,8 @@ services:
     volumes:
       - ./scripts:/opt/spark/scripts
       - ./schemas:/opt/spark/schemas
+      - ./data/geography:/opt/spark/geography
+
     command: tail -f /dev/null
 
   spark-worker:

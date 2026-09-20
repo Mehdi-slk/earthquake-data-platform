@@ -1,0 +1,5 @@
+sources:
+  - name: earthquake
+    schema: earthquake
+    tables:
+      - name: earthquakes
