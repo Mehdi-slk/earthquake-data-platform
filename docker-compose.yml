@@ -73,6 +73,7 @@ services:
       SPARK_MASTER: spark://spark-master:7077
     volumes:
       - ./scripts:/opt/spark/scripts
+      - ./schemas:/opt/spark/schemas
     command: tail -f /dev/null
 
   spark-worker:
