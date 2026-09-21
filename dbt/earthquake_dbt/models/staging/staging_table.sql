@@ -27,6 +27,8 @@ select
     longitude,
     latitude,
     depth,
+    country,
+    region,
     year as event_year,
     month as event_month,
     day as event_day,

@@ -1,0 +1,170 @@
+models:
+  - name: staging_table
+    description: "Cleaned and renamed earthquake data from the raw USGS earthquake table"
+    config:
+      contract:
+        enforced: true
+
+    columns:
+      - name: event_id
+        description: "Unique USGS identifier for the earthquake event"
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+
+      - name: magnitude
+        description: "Magnitude of the earthquake"
+        data_type: double precision
+
+      - name: place
+        description: "Location description provided by USGS"
+        data_type: varchar
+
+      - name: event_time
+        description: "Time at which the earthquake occurred"
+        data_type: timestamp
+        tests:
+          - not_null
+
+      - name: updated_time
+        description: "Time at which the earthquake information was last updated"
+        data_type: timestamp
+        tests:
+          - not_null
+
+      - name: time_zone_offset
+        description: "Time zone offset associated with the event"
+        data_type: integer
+
+      - name: felt_reports
+        description: "Number of felt reports"
+        data_type: integer
+
+      - name: community_intensity
+        description: "Community Internet Intensity value"
+        data_type: double precision
+
+      - name: mercalli_intensity
+        description: "Modified Mercalli Intensity value"
+        data_type: double precision
+
+      - name: alert_level
+        description: "USGS alert level assigned to the event"
+        data_type: varchar
+
+      - name: event_status
+        description: "Status of the earthquake event"
+        data_type: varchar
+
+      - name: tsunami_flag
+        description: "Indicates whether a tsunami was detected or expected"
+        data_type: integer
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+
+      - name: significance_score
+        description: "USGS significance score"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: source_network
+        description: "Network that reported the earthquake"
+        data_type: varchar
+
+      - name: network_event_code
+        description: "Event code assigned by the source network"
+        data_type: varchar
+
+      - name: associated_ids
+        description: "Associated earthquake identifiers"
+        data_type: varchar
+
+      - name: id_sources
+        description: "Sources associated with the earthquake identifiers"
+        data_type: varchar
+
+      - name: available_data_types
+        description: "Types of additional data available for the event"
+        data_type: varchar
+
+      - name: station_count
+        description: "Number of seismic stations reporting the event"
+        data_type: integer
+
+      - name: nearest_station_distance
+        description: "Distance to the nearest station"
+        data_type: double precision
+
+      - name: rms_residual
+        description: "Root mean square residual"
+        data_type: double precision
+
+      - name: azimuthal_gap
+        description: "Azimuthal gap between reporting stations"
+        data_type: double precision
+
+      - name: magnitude_type
+        description: "Magnitude scale used for the event"
+        data_type: varchar
+
+      - name: event_type
+        description: "Type of seismic event"
+        data_type: varchar
+
+      - name: event_title
+        description: "Title describing the earthquake event"
+        data_type: varchar
+
+      - name: longitude
+        description: "Longitude of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+
+      - name: latitude
+        description: "Latitude of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+
+      - name: depth
+        description: "Depth of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+
+      - name: country
+        description: "Country associated with the earthquake location"
+        data_type: varchar
+
+      - name: region
+        description: "Administrative region associated with the earthquake location"
+        data_type: varchar
+
+      - name: event_year
+        description: "Year extracted from the event timestamp"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: event_month
+        description: "Month extracted from the event timestamp"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: event_day
+        description: "Day extracted from the event timestamp"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: event_hour
+        description: "Hour extracted from the event timestamp"
+        data_type: integer
+        tests:
+          - not_null

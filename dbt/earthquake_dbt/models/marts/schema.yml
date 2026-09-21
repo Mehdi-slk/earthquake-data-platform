@@ -1,0 +1,272 @@
+models:
+
+  # =========================================================
+  # DATE DIMENSION
+  # =========================================================
+
+  - name: date_dim
+    description: "Date dimension"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: date_key
+        description: "Date key of the dimension"
+        data_type: varchar
+        tests:
+          - not_null
+
+      - name: full_date
+        description: "The complete event date and time"
+        data_type: date
+        tests:
+          - not_null
+
+      - name: the_year
+        description: "Year of the event"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: the_month
+        description: "Month of the event"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: the_day
+        description: "Day of the event"
+        data_type: integer
+        tests:
+          - not_null
+
+
+
+
+  # =========================================================
+  # NETWORK DIMENSION
+  # =========================================================
+
+  - name: network_dim
+    description: "Network information associated with an earthquake"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: network_event_code
+        description: "Unique event code assigned by the source network"
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+
+      - name: source_network
+        description: "Network that reported the earthquake"
+        data_type: varchar
+
+      - name: id_sources
+        description: "Sources associated with the earthquake identifiers"
+        data_type: varchar
+
+
+  # =========================================================
+  # LOCATION DIMENSION
+  # =========================================================
+
+  - name: location_dim
+    description: "Geographic information associated with an earthquake"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: location_key
+        description: "Unique key identifying a geographic location"
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+
+      - name: longitude
+        description: "Longitude of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+
+      - name: latitude
+        description: "Latitude of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+
+      - name: country
+        description: "Country associated with the earthquake location"
+        data_type: varchar
+
+      - name: region
+        description: "Administrative region associated with the earthquake location"
+        data_type: varchar
+
+
+  # =========================================================
+  # EVENT INFO DIMENSION
+  # =========================================================
+
+  - name: event_info_dim
+    description: "Descriptive information about an earthquake event"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: event_id
+        description: "Unique USGS identifier for the earthquake"
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+
+      - name: alert_level
+        description: "USGS alert level assigned to the event"
+        data_type: varchar
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['green', 'yellow', 'orange', 'red']
+
+      - name: event_status
+        description: "Status of the earthquake event"
+        data_type: varchar
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['automatic', 'reviewed', 'deleted']
+
+      - name: event_type
+        description: "Type of seismic event"
+        data_type: varchar
+
+      - name: event_title
+        description: "Title describing the earthquake event"
+        data_type: varchar
+
+      - name: magnitude_type
+        description: "Magnitude scale used for the event"
+        data_type: varchar
+
+      - name: available_data_types
+        description: "Types of additional data available for the event"
+        data_type: varchar
+
+      - name: associated_ids
+        description: "Associated earthquake identifiers"
+        data_type: varchar
+
+
+  # =========================================================
+  # FACT TABLE
+  # =========================================================
+
+  - name: fact_table
+    description: "Fact table containing one row per earthquake event"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: event_id
+        description: "Unique USGS identifier for the earthquake"
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+
+      - name: date_key
+        description: "Key identifying the event date"
+        data_type: varchar
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('date_dim')
+                field: date_key
+
+      - name: network_event_code
+        description: "Network event code"
+        data_type: varchar
+
+      - name: location_key
+        description: "Key identifying the earthquake location"
+        data_type: varchar
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('location_dim')
+                field: location_key
+
+      - name: event_time
+        description: "Time at which the earthquake occurred"
+        data_type: timestamp
+        tests:
+          - not_null
+
+      - name: updated_time
+        description: "Time at which the earthquake information was last updated"
+        data_type: timestamp
+        tests:
+          - not_null
+
+      - name: time_zone_offset
+        description: "Time zone offset associated with the event"
+        data_type: integer
+
+      - name: magnitude
+        description: "Magnitude of the earthquake"
+        data_type: double precision
+
+      - name: felt_reports
+        description: "Number of felt reports"
+        data_type: integer
+
+      - name: community_intensity
+        description: "Community Internet Intensity value"
+        data_type: double precision
+
+      - name: mercalli_intensity
+        description: "Modified Mercalli Intensity value"
+        data_type: double precision
+
+      - name: tsunami_flag
+        description: "Indicates whether a tsunami was detected or expected"
+        data_type: integer
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+
+      - name: significance_score
+        description: "USGS significance score"
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: station_count
+        description: "Number of seismic stations reporting the event"
+        data_type: integer
+
+      - name: nearest_station_distance
+        description: "Distance to the nearest station"
+        data_type: double precision
+
+      - name: rms_residual
+        description: "Root mean square residual"
+        data_type: double precision
+
+      - name: azimuthal_gap
+        description: "Azimuthal gap between stations"
+        data_type: double precision
+
+      - name: depth
+        description: "Depth of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null

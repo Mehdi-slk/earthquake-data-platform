@@ -155,6 +155,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: dbt
+    ports:
+      - "8085:8080"
     depends_on:
       postgres:
         condition: service_healthy
