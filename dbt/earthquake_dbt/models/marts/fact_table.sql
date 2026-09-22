@@ -6,7 +6,6 @@ SELECT
 
     s.event_time,
     s.updated_time,
-    s.time_zone_offset,
 
     s.magnitude,
     s.felt_reports,

@@ -1,6 +1,5 @@
 SELECT DISTINCT
     event_id,
-    alert_level,
     event_status,
     event_type,
     event_title,

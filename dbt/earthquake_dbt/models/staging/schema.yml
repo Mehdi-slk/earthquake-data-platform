@@ -33,10 +33,6 @@ models:
         tests:
           - not_null
 
-      - name: time_zone_offset
-        description: "Time zone offset associated with the event"
-        data_type: integer
-
       - name: felt_reports
         description: "Number of felt reports"
         data_type: integer
@@ -49,10 +45,6 @@ models:
         description: "Modified Mercalli Intensity value"
         data_type: double precision
 
-      - name: alert_level
-        description: "USGS alert level assigned to the event"
-        data_type: varchar
-
       - name: event_status
         description: "Status of the earthquake event"
         data_type: varchar
@@ -63,7 +55,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
 
       - name: significance_score
         description: "USGS significance score"
