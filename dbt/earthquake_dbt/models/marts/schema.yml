@@ -86,17 +86,6 @@ models:
           - not_null
           - unique
 
-      - name: longitude
-        description: "Longitude of the earthquake"
-        data_type: double precision
-        tests:
-          - not_null
-
-      - name: latitude
-        description: "Latitude of the earthquake"
-        data_type: double precision
-        tests:
-          - not_null
 
       - name: country
         description: "Country associated with the earthquake location"
@@ -258,6 +247,17 @@ models:
 
       - name: depth
         description: "Depth of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+      - name: longitude
+        description: "Longitude of the earthquake"
+        data_type: double precision
+        tests:
+          - not_null
+
+      - name: latitude
+        description: "Latitude of the earthquake"
         data_type: double precision
         tests:
           - not_null

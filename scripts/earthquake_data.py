@@ -62,18 +62,36 @@ earthquake_schema = StructType([
 # ---------------------------------------------------------
 # Read earthquakes from Kafka
 # ---------------------------------------------------------
+import json
+
+with open("/opt/airflow/data/batch_offsets.json", "r") as f:
+    batch_offsets = json.load(f)
+
+starting_offsets = {
+    "earthquakes": {
+        str(partition): offsets["start"]
+        for partition, offsets in batch_offsets.items()
+    }
+}
+
+ending_offsets = {
+    "earthquakes": {
+        str(partition): offsets["end"] + 1
+        for partition, offsets in batch_offsets.items()
+    }
+}
 
 read_df = (
     spark.read
     .format("kafka")
     .option("kafka.bootstrap.servers", "kafka:9093")
     .option("subscribe", "earthquakes")
-    .option("startingOffsets", "earliest")
+    .option("startingOffsets", json.dumps(starting_offsets))
+    .option("endingOffsets", json.dumps(ending_offsets))
     .load()
 )
 
-
-with open("/opt/spark/schemas/earthquake.avsc", "r") as f:
+with open("/opt/airflow/schemas/earthquake.avsc", "r") as f:
     avro_schema = f.read()
 
 
@@ -145,7 +163,7 @@ transformed_df = (
 # ---------------------------------------------------------
 
 admin1_df = gpd.read_file(
-    "/opt/spark/geography/admin1.geojson"
+    "/opt/airflow/data/geography/admin1.geojson"
 )
 
 admin1_df = admin1_df[
@@ -159,7 +177,7 @@ admin1_df = admin1_df[
 
 
 country_df = gpd.read_file(
-    "/opt/spark/geography/ne_10m_admin_0_countries.shp"
+    "/opt/airflow/data/geography/ne_10m_admin_0_countries.shp"
 )
 
 country_df = country_df[
@@ -445,7 +463,23 @@ transformed_df = transformed_df.join(
 # ---------------------------------------------------------
 # Write to PostgreSQL
 # ---------------------------------------------------------
+existing_ids = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:postgresql://postgres:5432/earthquake") \
+    .option(
+        "dbtable",
+        "(SELECT event_id FROM earthquake.earthquakes) AS existing"
+    ) \
+    .option("user", "admin") \
+    .option("password", "admin") \
+    .option("driver", "org.postgresql.Driver") \
+    .load()
 
+transformed_df = transformed_df.join(
+    existing_ids,
+    on="event_id",
+    how="left_anti"
+)
 transformed_df.write \
     .format("jdbc") \
     .option(

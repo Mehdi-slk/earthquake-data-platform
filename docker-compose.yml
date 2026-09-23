@@ -75,6 +75,7 @@ services:
       - ./scripts:/opt/spark/scripts
       - ./schemas:/opt/spark/schemas
       - ./data/geography:/opt/spark/geography
+      - ./data:/opt/spark/data
 
     command: tail -f /dev/null
 
@@ -141,13 +142,19 @@ services:
       AIRFLOW_CONN_SPARK_DEFAULT: "spark://spark-master:7077"
       _AIRFLOW_WWW_USER_USERNAME: admin
       _AIRFLOW_WWW_USER_PASSWORD: admin
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    group_add:
+      - "1001"
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./producers:/opt/airflow/producers
       - ./extract_data:/opt/airflow/extract_data
       - ./scripts:/opt/airflow/scripts
+      - ./data:/opt/airflow/data
+      - ./schemas:/opt/airflow/schemas
     command: standalone
 
   dbt:

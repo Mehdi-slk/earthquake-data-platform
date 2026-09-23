@@ -1,3 +1,9 @@
+{{ config(
+    materialized='incremental',
+    unique_key='event_id',
+    on_schema_change='append_new_columns'
+) }}
+
 SELECT
     s.event_id,
     d.date_key,
@@ -17,7 +23,10 @@ SELECT
     s.nearest_station_distance,
     s.rms_residual,
     s.azimuthal_gap,
-    s.depth
+    s.depth,
+
+    s.longitude,
+    s.latitude
 
 FROM {{ ref('staging_table') }} AS s
 
@@ -28,7 +37,15 @@ LEFT JOIN {{ ref('network_dim') }} AS n
     ON s.network_event_code = n.network_event_code
 
 LEFT JOIN {{ ref('location_dim') }} AS l
-    ON s.longitude = l.longitude
-    AND s.latitude = l.latitude
-    AND s.country = l.country
+    ON s.country = l.country
     AND s.region = l.region
+
+{% if is_incremental() %}
+
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM {{ this }} AS t
+    WHERE t.event_id = s.event_id
+)
+
+{% endif %}
